@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ti-Explain</title>
+<script src="ti-explain.js"></script>
+<link rel="stylesheet" href="ti-explain.css">
+<head>
+<body>
+<h1>
+<!-- img src="https://docs.pingcap.com/static/1d8632a2b41f24161ffae995844556f2/pingcap-logo.svg" width="106px" -->
+Ti-Explain</h1>
+
+This tool will try to help you to understand the EXPLAIN output of TiDB.<br>
+
+See also <a href="https://docs.pingcap.com/tidb/dev/explain-walkthrough">the explain walkthrough</a> in the docs for more background.<br>
+
+Paste the output of "EXPLAIN" or "EXPLAIN ANALYZE" into the text field below and click "Check Explain".
+
+<textarea rows="10" cols="120" id="explaintext"></textarea><br />
+<button onclick="checkExplain()">Check Explain</button>
+<button onclick="clearExplain()">Clear</button>
+<div id="content"></div>
+</body>
+</html>

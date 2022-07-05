@@ -1,0 +1,11 @@
+table.explainrow {
+  border: 1px solid;
+}
+
+table.explainrow > tr {
+  border: 1px solid;
+}
+
+table.explainrow > tr > td {
+  border: 1px solid;
+}
