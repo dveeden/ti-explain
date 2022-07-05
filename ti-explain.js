@@ -79,9 +79,10 @@ function explainExplain(explaininfo) {
         }
 
         // https://docs.pingcap.com/tidb/dev/explain-overview#operator-overview
-	    // https://docs.pingcap.com/tidb/dev/choose-index#operators-for-accessing-tables
+        // https://docs.pingcap.com/tidb/dev/choose-index#operators-for-accessing-tables
         operator = row["id"].match(/([A-Z].*)_/)[1]
         let operatorAdv = undefined;
+        let operatorURL = undefined;
         switch (operator) {
             case "TableFullScan":
                 operatorAdv = "full table scan, consider adding an index.";
@@ -101,6 +102,18 @@ function explainExplain(explaininfo) {
             case "IndexRangeScan":
                 operatorAdv = "Scans a range of the index.";
                 break;
+            case "HashJoin":
+                operatorURL = "https://docs.pingcap.com/tidb/dev/explain-joins#hash-join";
+                break;
+            case "ExchangeSender":
+                operatorURL = "https://docs.pingcap.com/tidb/dev/explain-mpp#exchange-operators";
+                break;
+            case "HashAgg":
+                operatorURL = "https://docs.pingcap.com/tidb/dev/explain-aggregation#hash-aggregation";
+                break;
+            case "StreamAgg":
+                operatorURL = "https://docs.pingcap.com/tidb/dev/explain-aggregation#stream-aggregation";
+                break;
             default:
                 console.log("No advise available for '" + operator + "' operator");
         }
@@ -108,6 +121,13 @@ function explainExplain(explaininfo) {
         if (operatorAdv) {
             outputDiv.appendChild(document.createTextNode("Info for the \"" + operator + "\" operator: " + operatorAdv));
             outputDiv.appendChild(document.createElement("br"));
+        }
+
+        if (operatorURL) {
+            link = document.createElement("a");
+            link.appendChild(document.createTextNode("More info on the " + operator + " operator can be found here."));
+            link.href = operatorURL;
+            outputDiv.appendChild(link);
         }
 
 
