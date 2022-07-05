@@ -23,32 +23,32 @@ function lineToObj(line, explaininfo) {
 }
 
 function formatInfo(info) {
-            return info.replace(/: ?\{/g, ":{\n")
-		.replace(/, /g,",\n")
-		.trim();
+    return info.replace(/: ?\{/g, ":{\n")
+        .replace(/, /g, ",\n")
+        .trim();
 }
 
 function explainExplain(explaininfo) {
     outputDiv = document.getElementById("content");
-	outputDiv.innerHTML = '';
+    outputDiv.innerHTML = '';
     explaininfo["rows"].forEach((row) => {
         outputDiv.appendChild(document.createElement("hr"));
         outputDiv.appendChild(document.createTextNode("Going to try and explain this row:"));
         t = document.createElement("table");
-	t.className = "explainrow";
+        t.className = "explainrow";
         rt = document.createElement("tr");
         rd = document.createElement("tr");
-	for ([col, val] of Object.entries(row)) {
+        for ([col, val] of Object.entries(row)) {
             c = document.createElement("td");
             c.appendChild(document.createTextNode(col));
             rt.appendChild(c)
 
             c = document.createElement("td");
-		pre = document.createElement("pre");
+            pre = document.createElement("pre");
             pre.appendChild(document.createTextNode(formatInfo(val)));
             c.appendChild(pre);
             rd.appendChild(c)
-	}
+        }
         t.appendChild(rt)
         t.appendChild(rd)
         outputDiv.appendChild(t)
@@ -57,9 +57,9 @@ function explainExplain(explaininfo) {
             outputDiv.appendChild(document.createTextNode("Using coprocessor for TiKV row based storage."));
             outputDiv.appendChild(document.createElement("br"));
             link = document.createElement("a");
-		link.appendChild(document.createTextNode("For more info: TiDB Docs: TiKV Coprocessor"));
-		link.href = "https://docs.pingcap.com/tidb/stable/tikv-overview#tikv-coprocessor";
-		outputDiv.appendChild(link);
+            link.appendChild(document.createTextNode("For more info: TiDB Docs: TiKV Coprocessor"));
+            link.href = "https://docs.pingcap.com/tidb/stable/tikv-overview#tikv-coprocessor";
+            outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
 
@@ -67,21 +67,21 @@ function explainExplain(explaininfo) {
             outputDiv.appendChild(document.createTextNode("Using coprocessor for TiFlash column based storage."));
             outputDiv.appendChild(document.createElement("br"));
             link = document.createElement("a");
-		link.appendChild(document.createTextNode("For more info: TiFlash Overview"));
-		link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
-		outputDiv.appendChild(link);
+            link.appendChild(document.createTextNode("For more info: TiFlash Overview"));
+            link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
+            outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
 
-	if (row["operator info"].match(/stats:pseudo/)) {
+        if (row["operator info"].match(/stats:pseudo/)) {
             outputDiv.appendChild(document.createTextNode("Using pseudo statistics, consider running ANALYZE TABLE."));
             outputDiv.appendChild(document.createElement("br"));
-	}
+        }
 
-	if (row["id"].match(/TableFullScan/)) {
+        if (row["id"].match(/TableFullScan/)) {
             outputDiv.appendChild(document.createTextNode("Using full table scan, consider adding an index."));
             outputDiv.appendChild(document.createElement("br"));
-	}
+        }
 
     });
 }
