@@ -78,10 +78,38 @@ function explainExplain(explaininfo) {
             outputDiv.appendChild(document.createElement("br"));
         }
 
-        if (row["id"].match(/TableFullScan/)) {
-            outputDiv.appendChild(document.createTextNode("Using full table scan, consider adding an index."));
+        // https://docs.pingcap.com/tidb/dev/explain-overview#operator-overview
+	    // https://docs.pingcap.com/tidb/dev/choose-index#operators-for-accessing-tables
+        operator = row["id"].match(/([A-Z].*)_/)[1]
+        let operatorAdv = undefined;
+        switch (operator) {
+            case "TableFullScan":
+                operatorAdv = "full table scan, consider adding an index.";
+                break;
+            case "TableRangeScan":
+                operatorAdv = "Scans a range of the table.";
+                break;
+            case "TableReader":
+                operatorAdv = "Aggregates the data obtained by the underlying operators like TableFullScan or TableRangeScan in TiKV.";
+                break;
+            case "TableRowIDScan":
+                operatorAdv = "Scans the table data based on the RowID. Usually follows an index read operation to retrieve the matching data rows.";
+                break;
+            case "IndexFullScan":
+                operatorAdv = "Scans the full index, rather than the table data.";
+                break;
+            case "IndexRangeScan":
+                operatorAdv = "Scans a range of the index.";
+                break;
+            default:
+                console.log("No advise available for '" + operator + "' operator");
+        }
+
+        if (operatorAdv) {
+            outputDiv.appendChild(document.createTextNode("Info for the \"" + operator + "\" operator: " + operatorAdv));
             outputDiv.appendChild(document.createElement("br"));
         }
+
 
     });
 }
