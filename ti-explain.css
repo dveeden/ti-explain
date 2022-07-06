@@ -9,3 +9,12 @@ table.explainrow > tr {
 table.explainrow > tr > td {
   border: 1px solid;
 }
+
+body {
+	font-family: Segoe UI,Helvetica,Arial,sans-serif;
+}
+
+#tree {
+	background-color: #edeef9;
+	margin: 10px;
+}

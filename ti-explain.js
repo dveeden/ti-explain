@@ -1,5 +1,6 @@
 function clearExplain() {
     document.getElementById("content").innerHTML = '';
+    document.getElementById("tree").innerHTML = '<pre id="treepre"></pre>';
     document.getElementById("explaintext").value = '';
 }
 
@@ -30,8 +31,13 @@ function formatInfo(info) {
 
 function explainExplain(explaininfo) {
     outputDiv = document.getElementById("content");
+    treeDiv = document.getElementById("tree")
+    treeDiv.innerHTML = '<pre id="treepre"></pre>';
+    treePre = document.getElementById("treepre");
     outputDiv.innerHTML = '';
+    treeDiv.insertBefore(document.createTextNode("Explain Tree"), treePre);
     explaininfo["rows"].forEach((row) => {
+        treePre.appendChild(document.createTextNode(row["id"] + "\n"));
         outputDiv.appendChild(document.createElement("hr"));
         outputDiv.appendChild(document.createTextNode("Going to try and explain this row:"));
         t = document.createElement("table");
