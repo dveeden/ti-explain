@@ -5,18 +5,18 @@ function clearExplain() {
 }
 
 function lineToArray(line, columnstarts) {
-    cols = [];
+    let cols = [];
     for (let i = 0; i < columnstarts.length - 1; i++) {
-        colStart = columnstarts[i] + 2
-        colEnd = columnstarts[i + 1] - 1;
+        let colStart = columnstarts[i] + 2;
+        let colEnd = columnstarts[i + 1] - 1;
         cols.push(line.substring(colStart, colEnd));
     }
     return cols;
 }
 
 function lineToObj(line, explaininfo) {
-    colData = {}
-    cols = lineToArray(line, explaininfo["columnstarts"]);
+    let colData = {};
+    let cols = lineToArray(line, explaininfo["columnstarts"]);
     for (let i = 0; i < cols.length; i++) {
         colData[explaininfo["columnnames"][i]] = cols[i];
     }
@@ -29,40 +29,69 @@ function formatInfo(info) {
         .trim();
 }
 
+function formatStruct(info) {
+    let i = 0;
+    let r = "";
+
+    for (let c of info) {
+        if (![" ", "}", ")"].includes(c)) {
+            r += c;
+        }
+
+        if (["{", "("].includes(c)) {
+            i++;
+            r += "\n" + " ".repeat(i * 2);
+        } else if (["}", ")"].includes(c)) {
+            i--;
+            r += "\n" + " ".repeat(i * 2) + c;
+        } else if (c == ",") {
+            r += "\n" + " ".repeat(i * 2);
+        } else if (c == ":") {
+            r += " ";
+        }
+    }
+
+    return r;
+}
+
 function explainExplain(explaininfo) {
-    outputDiv = document.getElementById("content");
-    treeDiv = document.getElementById("tree")
+    let outputDiv = document.getElementById("content");
+    let treeDiv = document.getElementById("tree");
     treeDiv.innerHTML = '<pre id="treepre"></pre>';
-    treePre = document.getElementById("treepre");
+    let treePre = document.getElementById("treepre");
     outputDiv.innerHTML = '';
     treeDiv.insertBefore(document.createTextNode("Explain Tree"), treePre);
     explaininfo["rows"].forEach((row) => {
         treePre.appendChild(document.createTextNode(row["id"] + "\n"));
         outputDiv.appendChild(document.createElement("hr"));
         outputDiv.appendChild(document.createTextNode("Going to try and explain this row:"));
-        t = document.createElement("table");
+        let t = document.createElement("table");
         t.className = "explainrow";
-        rt = document.createElement("tr");
-        rd = document.createElement("tr");
-        for ([col, val] of Object.entries(row)) {
-            c = document.createElement("td");
+        let rt = document.createElement("tr");
+        let rd = document.createElement("tr");
+        for (let [col, val] of Object.entries(row)) {
+            let c = document.createElement("td");
             c.appendChild(document.createTextNode(col));
-            rt.appendChild(c)
+            rt.appendChild(c);
 
             c = document.createElement("td");
-            pre = document.createElement("pre");
-            pre.appendChild(document.createTextNode(formatInfo(val)));
+            let pre = document.createElement("pre");
+            if (["execution info", "operator info"].includes(col)) {
+                pre.appendChild(document.createTextNode(formatStruct(val)));
+            } else {
+                pre.appendChild(document.createTextNode(formatInfo(val)));
+            }
             c.appendChild(pre);
-            rd.appendChild(c)
+            rd.appendChild(c);
         }
-        t.appendChild(rt)
-        t.appendChild(rd)
-        outputDiv.appendChild(t)
+        t.appendChild(rt);
+        t.appendChild(rd);
+        outputDiv.appendChild(t);
 
         if (row["task"].trim() == "cop[tikv]") {
             outputDiv.appendChild(document.createTextNode("Using coprocessor for TiKV row based storage."));
             outputDiv.appendChild(document.createElement("br"));
-            link = document.createElement("a");
+            let link = document.createElement("a");
             link.appendChild(document.createTextNode("For more info: TiDB Docs: TiKV Coprocessor"));
             link.href = "https://docs.pingcap.com/tidb/stable/tikv-overview#tikv-coprocessor";
             outputDiv.appendChild(link);
@@ -72,7 +101,7 @@ function explainExplain(explaininfo) {
         if (row["task"].trim() == "cop[tiflash]") {
             outputDiv.appendChild(document.createTextNode("Using coprocessor for TiFlash column based storage."));
             outputDiv.appendChild(document.createElement("br"));
-            link = document.createElement("a");
+            let link = document.createElement("a");
             link.appendChild(document.createTextNode("For more info: TiFlash Overview"));
             link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
             outputDiv.appendChild(link);
@@ -86,9 +115,9 @@ function explainExplain(explaininfo) {
 
         // https://docs.pingcap.com/tidb/dev/explain-overview#operator-overview
         // https://docs.pingcap.com/tidb/dev/choose-index#operators-for-accessing-tables
-        operator = row["id"].match(/([A-Z].*)_/)[1]
-        let operatorAdv = undefined;
-        let operatorURL = undefined;
+        let operator = row["id"].match(/([A-Z].*)_/)[1];
+        let operatorAdv;
+        let operatorURL;
         switch (operator) {
             case "TableFullScan":
                 operatorAdv = "full table scan, consider adding an index.";
@@ -130,7 +159,7 @@ function explainExplain(explaininfo) {
         }
 
         if (operatorURL) {
-            link = document.createElement("a");
+            let link = document.createElement("a");
             link.appendChild(document.createTextNode("More info on the " + operator + " operator can be found here."));
             link.href = operatorURL;
             outputDiv.appendChild(link);
@@ -141,23 +170,23 @@ function explainExplain(explaininfo) {
 }
 
 function checkExplain() {
-    explaininfo = {
+    let explaininfo = {
         "columnstarts": [],
         "columnnames": [],
         "rows": [],
     };
-    hasColumnInfo = false;
-    hasColumnNames = false;
-    rowNumber = 0;
-    expText = document.getElementById("explaintext").value;
-    expLines = expText.split(/\r?\n/);
+    let hasColumnInfo = false;
+    let hasColumnNames = false;
+    let rowNumber = 0;
+    let expText = document.getElementById("explaintext").value;
+    let expLines = expText.split(/\r?\n/);
 
     expLines.forEach((expLine) => {
         if ((expLine[0] == "+") && !hasColumnInfo) {
             hasColumnInfo = true;
             for (let i = 0; i < expLine.length; i++) {
                 if (expLine[i] == "+") {
-                    explaininfo["columnstarts"].push(i)
+                    explaininfo["columnstarts"].push(i);
                 }
             }
         } else if ((expLine[0] == "|") && hasColumnInfo) {
