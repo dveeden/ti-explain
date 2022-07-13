@@ -99,11 +99,27 @@ function explainExplain(explaininfo) {
         }
 
         if (row["task"].trim() == "cop[tiflash]") {
-            outputDiv.appendChild(document.createTextNode("Using coprocessor for TiFlash column based storage."));
+            outputDiv.appendChild(document.createTextNode("Using distributed coprocessor for TiFlash column based storage."));
             outputDiv.appendChild(document.createElement("br"));
             let link = document.createElement("a");
             link.appendChild(document.createTextNode("For more info: TiFlash Overview"));
             link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
+            outputDiv.appendChild(link);
+            outputDiv.appendChild(document.createElement("br"));
+        }
+
+        if (row["task"].trim() == "mpp[tiflash]") {
+            outputDiv.appendChild(document.createTextNode("Using distributed MPP for TiFlash column based storage."));
+            outputDiv.appendChild(document.createElement("br"));
+            let link = document.createElement("a");
+            link.appendChild(document.createTextNode("For more info: TiFlash Overview"));
+            link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
+            outputDiv.appendChild(link);
+            outputDiv.appendChild(document.createElement("br"));
+
+            link = document.createElement("a");
+            link.appendChild(document.createTextNode("For more info: TiFlash MPP mode"));
+            link.href = "https://docs.pingcap.com/tidb/stable/use-tiflash#use-the-mpp-mode";
             outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
