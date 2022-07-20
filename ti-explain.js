@@ -135,8 +135,11 @@ function explainExplain(explaininfo) {
         let operatorAdv;
         let operatorURL;
         switch (operator) {
+            case "TableDual":
+                operatorAdv = "Virtual single row table.";
+                break;
             case "TableFullScan":
-                operatorAdv = "full table scan, consider adding an index.";
+                operatorAdv = "Full table scan, consider adding an index.";
                 break;
             case "TableRangeScan":
                 operatorAdv = "Scans a range of the table.";
@@ -161,6 +164,9 @@ function explainExplain(explaininfo) {
                 break;
             case "HashAgg":
                 operatorURL = "https://docs.pingcap.com/tidb/dev/explain-aggregation#hash-aggregation";
+                break;
+            case "Projection":
+                operatorAdv = "Maps expression value(s) to select list.";
                 break;
             case "StreamAgg":
                 operatorURL = "https://docs.pingcap.com/tidb/dev/explain-aggregation#stream-aggregation";
