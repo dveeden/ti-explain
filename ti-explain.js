@@ -4,6 +4,16 @@ function clearExplain() {
     document.getElementById("explaintext").value = '';
 }
 
+function loadExample() {
+    fetch("testdata/explain_0004.txt")
+        .then(r => {
+            r.text()
+                .then(r => {
+                    document.getElementById("explaintext").value = r
+                })
+        })
+}
+
 function lineToArray(line, columnstarts) {
     let cols = [];
     for (let i = 0; i < columnstarts.length - 1; i++) {
