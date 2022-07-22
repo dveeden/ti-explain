@@ -19,3 +19,7 @@ body {
 	margin: 10px;
 	line-height: 92%;
 }
+
+textarea {
+	white-space: pre;
+}
