@@ -213,25 +213,43 @@ function checkExplain() {
     let expText = document.getElementById("explaintext").value;
     let expLines = expText.split(/\r?\n/);
 
-    expLines.forEach((expLine) => {
-        if ((expLine[0] == "+") && !hasColumnInfo) {
-            hasColumnInfo = true;
-            for (let i = 0; i < expLine.length; i++) {
-                if (expLine[i] == "+") {
-                    explaininfo["columnstarts"].push(i);
-                }
-            }
-        } else if ((expLine[0] == "|") && hasColumnInfo) {
-            if (!hasColumnNames) {
-                hasColumnNames = true;
-                explaininfo["columnnames"] = lineToArray(expLine, explaininfo["columnstarts"]).map(
-                    x => x.trim()
-                );
+    if (expLines[0].match("\t?id *\ttask")) {
+        expLines.forEach((expLine) => {
+            if (!hasColumnInfo) { // header
+                hasColumnInfo = true;
+                explaininfo.columnnames = expLine.split("\t").map(x => x.trim());
+                explaininfo.columnnames.shift()
             } else {
-                explaininfo["rows"][rowNumber] = lineToObj(expLine, explaininfo);
+                coldata = expLine.split("\t")
+                coldata.shift()
+                explaininfo.rows[rowNumber] = {}
+                for (const [index, element] of coldata.entries()) {
+                    explaininfo.rows[rowNumber][explaininfo.columnnames[index]] = element;
+                }
                 rowNumber++;
             }
-        }
-    });
+        });
+    } else { // MySQL Client Output
+        expLines.forEach((expLine) => {
+            if ((expLine[0] == "+") && !hasColumnInfo) {
+                hasColumnInfo = true;
+                for (let i = 0; i < expLine.length; i++) {
+                    if (expLine[i] == "+") {
+                        explaininfo["columnstarts"].push(i);
+                    }
+                }
+            } else if ((expLine[0] == "|") && hasColumnInfo) {
+                if (!hasColumnNames) {
+                    hasColumnNames = true;
+                    explaininfo["columnnames"] = lineToArray(expLine, explaininfo["columnstarts"]).map(
+                        x => x.trim()
+                    );
+                } else {
+                    explaininfo["rows"][rowNumber] = lineToObj(expLine, explaininfo);
+                    rowNumber++;
+                }
+            }
+        });
+    }
     explainExplain(explaininfo);
 }
