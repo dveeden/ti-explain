@@ -1,4 +1,5 @@
 function clearExplain() {
+    document.getElementById("simpletable").innerHTML = '';
     document.getElementById("content").innerHTML = '';
     document.getElementById("tree").innerHTML = '<pre id="treepre"></pre>';
     document.getElementById("explaintext").value = '';
@@ -69,8 +70,18 @@ function explainExplain(explaininfo) {
     let treeDiv = document.getElementById("tree");
     treeDiv.innerHTML = '<pre id="treepre"></pre>';
     let treePre = document.getElementById("treepre");
+    let simpleTbl = document.getElementById("simpletable");
     outputDiv.innerHTML = '';
     treeDiv.insertBefore(document.createTextNode("Explain Tree"), treePre);
+
+    let str = document.createElement("tr");
+    explaininfo["columnnames"].forEach(col => {
+        let td = document.createElement("td");
+        td.appendChild(document.createTextNode(col));
+        str.appendChild(td);
+    });
+    simpleTbl.appendChild(str);
+
     explaininfo["rows"].forEach((row) => {
         treePre.appendChild(document.createTextNode(row["id"] + "\n"));
         outputDiv.appendChild(document.createElement("hr"));
@@ -88,6 +99,8 @@ function explainExplain(explaininfo) {
             let pre = document.createElement("pre");
             if (["execution info", "operator info"].includes(col)) {
                 pre.appendChild(document.createTextNode(formatStruct(val)));
+            } else if (col == "id") {
+                pre.appendChild(document.createTextNode(val))
             } else {
                 pre.appendChild(document.createTextNode(formatInfo(val)));
             }
@@ -95,6 +108,8 @@ function explainExplain(explaininfo) {
             rd.appendChild(c);
         }
         t.appendChild(rt);
+        simpleTbl.appendChild(rd.cloneNode(true))
+        rd.firstChild.firstChild.textContent = rd.firstChild.firstChild.textContent.trim()
         t.appendChild(rd);
         outputDiv.appendChild(t);
 
@@ -251,5 +266,6 @@ function checkExplain() {
             }
         });
     }
+    console.log(explaininfo);
     explainExplain(explaininfo);
 }

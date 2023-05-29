@@ -1,5 +1,7 @@
 table.explainrow {
   border: 1px solid;
+  border-collapse: collapse;
+  margin: 5px;
 }
 
 table.explainrow > tr {
@@ -7,6 +9,19 @@ table.explainrow > tr {
 }
 
 table.explainrow > tr > td {
+  border: 1px solid;
+}
+
+table.simpletable {
+  border: 1px solid;
+  border-collapse: collapse;
+}
+
+table.simpletable > tr {
+  border: 1px solid;
+}
+
+table.simpletable > tr > td {
   border: 1px solid;
 }
 
