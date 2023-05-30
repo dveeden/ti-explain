@@ -1,2 +1,3 @@
 default:
-	js-beautify -r ti-explain.js
+	js-beautify -r ti-explain.ts
+	tsc

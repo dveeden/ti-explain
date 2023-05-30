@@ -2,17 +2,19 @@ function clearExplain() {
     document.getElementById("simpletable").innerHTML = '';
     document.getElementById("content").innerHTML = '';
     document.getElementById("tree").innerHTML = '<pre id="treepre"></pre>';
-    document.getElementById("explaintext").value = '';
+    ( < HTMLTextAreaElement > document.getElementById("explaintext")).value = '';
 }
+
 function loadExample() {
     fetch("testdata/explain_0004.txt")
         .then(r => {
-        r.text()
-            .then(r => {
-            document.getElementById("explaintext").value = r;
-        });
-    });
+            r.text()
+                .then(r => {
+                    ( < HTMLTextAreaElement > document.getElementById("explaintext")).value = r
+                })
+        })
 }
+
 function lineToArray(line, columnstarts) {
     let cols = [];
     for (let i = 0; i < columnstarts.length - 1; i++) {
@@ -22,6 +24,7 @@ function lineToArray(line, columnstarts) {
     }
     return cols;
 }
+
 function lineToObj(line, explaininfo) {
     let colData = {};
     let cols = lineToArray(line, explaininfo["columnstarts"]);
@@ -30,35 +33,38 @@ function lineToObj(line, explaininfo) {
     }
     return colData;
 }
+
 function formatInfo(info) {
     return info.replace(/: ?\{/g, ":{\n")
         .replace(/, /g, ",\n")
         .trim();
 }
+
 function formatStruct(info) {
     let i = 0;
     let r = "";
+
     for (let c of info) {
         if (![" ", "}", ")"].includes(c)) {
             r += c;
         }
+
         if (["{", "("].includes(c)) {
             i++;
             r += "\n" + " ".repeat(i * 2);
-        }
-        else if (["}", ")"].includes(c)) {
+        } else if (["}", ")"].includes(c)) {
             i--;
             r += "\n" + " ".repeat(i * 2) + c;
-        }
-        else if (c == ",") {
+        } else if (c == ",") {
             r += "\n" + " ".repeat(i * 2);
-        }
-        else if (c == ":") {
+        } else if (c == ":") {
             r += " ";
         }
     }
+
     return r;
 }
+
 function explainExplain(explaininfo) {
     let outputDiv = document.getElementById("content");
     let treeDiv = document.getElementById("tree");
@@ -67,6 +73,7 @@ function explainExplain(explaininfo) {
     let simpleTbl = document.getElementById("simpletable");
     outputDiv.innerHTML = '';
     treeDiv.insertBefore(document.createTextNode("Explain Tree"), treePre);
+
     let str = document.createElement("tr");
     explaininfo["columnnames"].forEach(col => {
         let td = document.createElement("td");
@@ -74,6 +81,7 @@ function explainExplain(explaininfo) {
         str.appendChild(td);
     });
     simpleTbl.appendChild(str);
+
     explaininfo["rows"].forEach((row) => {
         treePre.appendChild(document.createTextNode(row["id"] + "\n"));
         outputDiv.appendChild(document.createElement("hr"));
@@ -86,25 +94,25 @@ function explainExplain(explaininfo) {
             let c = document.createElement("td");
             c.appendChild(document.createTextNode(col));
             rt.appendChild(c);
+
             c = document.createElement("td");
             let pre = document.createElement("pre");
             if (["execution info", "operator info"].includes(col)) {
                 pre.appendChild(document.createTextNode(formatStruct(val)));
-            }
-            else if (col == "id") {
-                pre.appendChild(document.createTextNode(val));
-            }
-            else {
+            } else if (col == "id") {
+                pre.appendChild(document.createTextNode( < string > val))
+            } else {
                 pre.appendChild(document.createTextNode(formatInfo(val)));
             }
             c.appendChild(pre);
             rd.appendChild(c);
         }
         t.appendChild(rt);
-        simpleTbl.appendChild(rd.cloneNode(true));
-        rd.firstChild.firstChild.textContent = rd.firstChild.firstChild.textContent.trim();
+        simpleTbl.appendChild(rd.cloneNode(true))
+        rd.firstChild.firstChild.textContent = rd.firstChild.firstChild.textContent.trim()
         t.appendChild(rd);
         outputDiv.appendChild(t);
+
         if (row["task"].trim() == "cop[tikv]") {
             outputDiv.appendChild(document.createTextNode("Using coprocessor for TiKV row based storage."));
             outputDiv.appendChild(document.createElement("br"));
@@ -114,6 +122,7 @@ function explainExplain(explaininfo) {
             outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
+
         if (row["task"].trim() == "cop[tiflash]") {
             outputDiv.appendChild(document.createTextNode("Using distributed coprocessor for TiFlash column based storage."));
             outputDiv.appendChild(document.createElement("br"));
@@ -123,6 +132,7 @@ function explainExplain(explaininfo) {
             outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
+
         if (row["task"].trim() == "mpp[tiflash]") {
             outputDiv.appendChild(document.createTextNode("Using distributed MPP for TiFlash column based storage."));
             outputDiv.appendChild(document.createElement("br"));
@@ -131,16 +141,19 @@ function explainExplain(explaininfo) {
             link.href = "https://docs.pingcap.com/tidb/stable/tiflash-overview";
             outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
+
             link = document.createElement("a");
             link.appendChild(document.createTextNode("For more info: TiFlash MPP mode"));
             link.href = "https://docs.pingcap.com/tidb/stable/use-tiflash#use-the-mpp-mode";
             outputDiv.appendChild(link);
             outputDiv.appendChild(document.createElement("br"));
         }
+
         if (row["operator info"].match(/stats:pseudo/)) {
             outputDiv.appendChild(document.createTextNode("Using pseudo statistics, consider running ANALYZE TABLE."));
             outputDiv.appendChild(document.createElement("br"));
         }
+
         // https://docs.pingcap.com/tidb/dev/explain-overview#operator-overview
         // https://docs.pingcap.com/tidb/dev/choose-index#operators-for-accessing-tables
         let operator = row["id"].match(/([A-Z].*)_/)[1];
@@ -186,18 +199,23 @@ function explainExplain(explaininfo) {
             default:
                 console.log("No advise available for '" + operator + "' operator");
         }
+
         if (operatorAdv) {
             outputDiv.appendChild(document.createTextNode("Info for the \"" + operator + "\" operator: " + operatorAdv));
             outputDiv.appendChild(document.createElement("br"));
         }
+
         if (operatorURL) {
             let link = document.createElement("a");
             link.appendChild(document.createTextNode("More info on the " + operator + " operator can be found here."));
             link.href = operatorURL;
             outputDiv.appendChild(link);
         }
+
+
     });
 }
+
 function checkExplain() {
     let explaininfo = {
         "columnstarts": [],
@@ -207,27 +225,26 @@ function checkExplain() {
     let hasColumnInfo = false;
     let hasColumnNames = false;
     let rowNumber = 0;
-    let expText = document.getElementById("explaintext").value;
+    let expText = ( < HTMLTextAreaElement > document.getElementById("explaintext")).value;
     let expLines = expText.split(/\r?\n/);
+
     if (expLines[0].match("\t?id *\ttask")) {
         expLines.forEach((expLine) => {
             if (!hasColumnInfo) { // header
                 hasColumnInfo = true;
                 explaininfo.columnnames = expLine.split("\t").map(x => x.trim());
-                explaininfo.columnnames.shift();
-            }
-            else {
-                let coldata = expLine.split("\t");
-                coldata.shift();
-                explaininfo.rows[rowNumber] = {};
+                explaininfo.columnnames.shift()
+            } else {
+                let coldata = expLine.split("\t")
+                coldata.shift()
+                explaininfo.rows[rowNumber] = {}
                 for (const [index, element] of coldata.entries()) {
                     explaininfo.rows[rowNumber][explaininfo.columnnames[index]] = element;
                 }
                 rowNumber++;
             }
         });
-    }
-    else { // MySQL Client Output
+    } else { // MySQL Client Output
         expLines.forEach((expLine) => {
             if ((expLine[0] == "+") && !hasColumnInfo) {
                 hasColumnInfo = true;
@@ -236,13 +253,13 @@ function checkExplain() {
                         explaininfo["columnstarts"].push(i);
                     }
                 }
-            }
-            else if ((expLine[0] == "|") && hasColumnInfo) {
+            } else if ((expLine[0] == "|") && hasColumnInfo) {
                 if (!hasColumnNames) {
                     hasColumnNames = true;
-                    explaininfo["columnnames"] = lineToArray(expLine, explaininfo["columnstarts"]).map(x => x.trim());
-                }
-                else {
+                    explaininfo["columnnames"] = lineToArray(expLine, explaininfo["columnstarts"]).map(
+                        x => x.trim()
+                    );
+                } else {
                     explaininfo["rows"][rowNumber] = lineToObj(expLine, explaininfo);
                     rowNumber++;
                 }
@@ -252,4 +269,3 @@ function checkExplain() {
     console.log(explaininfo);
     explainExplain(explaininfo);
 }
-//# sourceMappingURL=ti-explain.js.map
